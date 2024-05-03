@@ -95,9 +95,9 @@ function generateId() {
 app.post('/api/users/:_id/exercises', (req, res) => {
   const { _id } = req.params;
   const { description, duration, date } = req.body;
-  const userIndex = users.findIndex(u => u._id === _id);
+  const user = users.find(u => u._id === _id);
 
-  if (userIndex === -1) {
+  if (!user) {
     res.status(404).json({ error: 'User not found' });
     return;
   }
@@ -108,16 +108,9 @@ app.post('/api/users/:_id/exercises', (req, res) => {
     date: date ? new Date(date) : new Date()
   };
 
-  users[userIndex].log.push(newExercise);
+  user.log.push(newExercise);
 
-  // Menyiapkan objek respons dengan kolom latihan yang ditambahkan
-  const userWithExercise = {
-    username: users[userIndex].username,
-    _id: users[userIndex]._id,
-    log: users[userIndex].log
-  };
-
-  res.json(userWithExercise); // Mengembalikan objek pengguna dengan latihan yang ditambahkan
+  res.json(user); // Mengembalikan objek pengguna dengan latihan yang ditambahkan
 });
 
 
