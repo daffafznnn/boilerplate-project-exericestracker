@@ -32,9 +32,9 @@ app.get("/api/users", (req, res) => {
 app.post("/api/users/:_id/exercises", (req, res) => {
   const { _id } = req.params;
   const { description, duration, date } = req.body;
-  const user = users.find((u) => u._id === _id);
+  const userIndex = users.findIndex((u) => u._id === _id);
 
-  if (!user) {
+  if (userIndex === -1) {
     res.status(404).json({ error: "User not found" });
     return;
   }
@@ -45,9 +45,9 @@ app.post("/api/users/:_id/exercises", (req, res) => {
     date: date ? new Date(date) : new Date(),
   };
 
-  user.log.push(newExercise);
+  users[userIndex].log.push(newExercise);
 
-  res.json({ ...user, ...newExercise });
+  res.json({ ...users[userIndex], ...newExercise });
 });
 
 // Get user's log
