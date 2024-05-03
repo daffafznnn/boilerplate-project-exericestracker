@@ -11,12 +11,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 let users = [];
 let exercises = [];
 
-// Routes
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/views/index.html");
 });
 
-// Create new user
 app.post("/api/users", (req, res) => {
   const { username } = req.body;
   const newUser = { username, _id: generateId() };
@@ -24,12 +22,10 @@ app.post("/api/users", (req, res) => {
   res.json(newUser);
 });
 
-// Get all users
 app.get("/api/users", (req, res) => {
   res.json(users);
 });
 
-// Add exercise
 app.post("/api/users/:_id/exercises", (req, res) => {
   const { _id } = req.params;
   const { description, duration, date } = req.body;
@@ -41,18 +37,18 @@ app.post("/api/users/:_id/exercises", (req, res) => {
   }
 
   const newExercise = {
-    username: user.username,
     description,
     duration: parseInt(duration),
     date: date ? new Date(date) : new Date(),
     _id: generateId(),
   };
 
-  exercises.push(newExercise);
-  res.json({ ...user, ...newExercise });
+  user.log = user.log || [];
+  user.log.push(newExercise);
+
+  res.json(user);
 });
 
-// Get user's log
 app.get("/api/users/:_id/logs", (req, res) => {
   const { _id } = req.params;
   const user = users.find((u) => u._id === _id);
@@ -62,21 +58,27 @@ app.get("/api/users/:_id/logs", (req, res) => {
     return;
   }
 
-  const userExercises = exercises.filter(
-    (exercise) => exercise.username === user.username
-  );
+  let log = user.log || [];
+
+  const { from, to, limit } = req.query;
+
+  if (from && to) {
+    log = log.filter((exercise) => {
+      const exerciseDate = new Date(exercise.date);
+      return exerciseDate >= new Date(from) && exerciseDate <= new Date(to);
+    });
+  }
+
+  if (limit) {
+    log = log.slice(0, parseInt(limit));
+  }
+
   res.json({
     ...user,
-    count: userExercises.length,
-    log: userExercises.map((exercise) => ({
-      description: exercise.description,
-      duration: exercise.duration,
-      date: exercise.date.toDateString(),
-    })),
+    log,
   });
 });
 
-// Helper function to generate unique ID
 function generateId() {
   return "_" + Math.random().toString(36).substr(2, 9);
 }
@@ -84,3 +86,4 @@ function generateId() {
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log("Your app is listening on port " + listener.address().port);
 });
+  
