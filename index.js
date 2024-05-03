@@ -34,26 +34,27 @@ app.get("/api/users", (_req, res) => {
 });
 
 // Add exercise
-app.post("/api/users/:_id/exercises", (req, res) => {
+app.post('/api/users/:_id/exercises', (req, res) => {
   const { _id } = req.params;
   const { description, duration, date } = req.body;
-  const user = users.find((u) => u._id === _id);
+  const user = users.find(u => u._id === _id);
 
   if (!user) {
-    res.status(404).json({ error: "User not found" });
+    res.status(404).json({ error: 'User not found' });
     return;
   }
 
   const newExercise = {
     description,
     duration: parseInt(duration),
-    date: date ? new Date(date) : new Date(),
+    date: date ? new Date(date) : new Date()
   };
 
   user.log.push(newExercise);
 
   res.json(user); // Return the user object with added exercise fields
 });
+
 
 // Get user's log
 app.get("/api/users/:_id/logs", (req, res) => {
