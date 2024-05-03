@@ -18,7 +18,7 @@ app.get("/", (req, res) => {
 // Create new user
 app.post("/api/users", (req, res) => {
   const { username } = req.body;
-  const newUser = { username, _id: generateId(), log: [] }; // Change logs to log
+  const newUser = { username, _id: generateId(), log: [] }; // Changed logs to log
   users.push(newUser);
   res.json(newUser);
 });
@@ -47,8 +47,14 @@ app.post("/api/users/:_id/exercises", (req, res) => {
 
   user.log.push(newExercise);
 
-  // Return user object with added exercise
-  res.json(user);
+  // Return user object with added exercise fields
+  res.json({
+    username: user.username,
+    _id: user._id,
+    description: newExercise.description,
+    duration: newExercise.duration,
+    date: newExercise.date.toDateString(), // Convert date to string
+  });
 });
 
 // Get user's log
