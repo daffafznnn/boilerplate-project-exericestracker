@@ -47,7 +47,8 @@ app.post("/api/users/:_id/exercises", (req, res) => {
 
   user.log.push(newExercise);
 
-  res.json(user); // Mengembalikan objek pengguna dengan latihan yang ditambahkan
+  // Mengembalikan objek pengguna dengan latihan yang ditambahkan
+  res.json(user);
 });
 
 // Get user's log
@@ -75,8 +76,10 @@ app.get("/api/users/:_id/logs", (req, res) => {
     log = log.slice(0, parseInt(limit));
   }
 
+  // Mengembalikan objek pengguna dengan log array yang sesuai
   res.json({
-    ...user,
+    username: user.username,
+    _id: user._id,
     count: log.length,
     log: log.map((exercise) => ({
       description: exercise.description,
