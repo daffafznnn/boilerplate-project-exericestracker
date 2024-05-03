@@ -60,24 +60,16 @@ app.get("/api/users/:_id/logs", (req, res) => {
     return;
   }
 
-  let log = user.log || [];
-
-  const { from, to, limit } = req.query;
-
-  if (from && to) {
-    log = log.filter((exercise) => {
-      const exerciseDate = new Date(exercise.date);
-      return exerciseDate >= new Date(from) && exerciseDate <= new Date(to);
-    });
-  }
-
-  if (limit) {
-    log = log.slice(0, parseInt(limit));
-  }
+  const log = user.log || [];
 
   res.json({
     ...user,
-    log,
+    count: log.length,
+    log: log.map((exercise) => ({
+      description: exercise.description,
+      duration: exercise.duration,
+      date: new Date(exercise.date).toDateString(),
+    })),
   });
 });
 
