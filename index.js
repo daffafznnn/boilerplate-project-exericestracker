@@ -52,7 +52,12 @@ app.post("/api/users/:_id/exercises", (req, res) => {
 
   user.log.push(newExercise);
 
-  res.json(user); // This line returns user object with added exercise
+  // Return only the added exercise details
+  res.json({
+    description: newExercise.description,
+    duration: newExercise.duration,
+    date: newExercise.date.toDateString(),
+  });
 });
 
 // Get user's log
