@@ -29,25 +29,25 @@ app.get("/api/users", (req, res) => {
 });
 
 // Add exercise
-app.post('/api/users/:_id/exercises', (req, res) => {
+app.post("/api/users/:_id/exercises", (req, res) => {
   const { _id } = req.params;
   const { description, duration, date } = req.body;
-  const userIndex = users.findIndex(u => u._id === _id);
+  const user = users.find((u) => u._id === _id);
 
-  if (userIndex === -1) {
-    res.status(404).json({ error: 'User not found' });
+  if (!user) {
+    res.status(404).json({ error: "User not found" });
     return;
   }
 
   const newExercise = {
     description,
     duration: parseInt(duration),
-    date: date ? new Date(date) : new Date()
+    date: date ? new Date(date) : new Date(),
   };
 
-  users[userIndex].log.push(newExercise);
+  user.log.push(newExercise);
 
-  res.json({ username: users[userIndex].username, _id: users[userIndex]._id }); // Mengembalikan objek pengguna sesuai dengan yang diminta
+  res.json(user); // Mengembalikan objek pengguna dengan latihan yang ditambahkan
 });
 
 // Get user's log
@@ -90,30 +90,6 @@ app.get("/api/users/:_id/logs", (req, res) => {
 function generateId() {
   return "_" + Math.random().toString(36).substr(2, 9);
 }
-
-// Add exercise
-app.post('/api/users/:_id/exercises', (req, res) => {
-  const { _id } = req.params;
-  const { description, duration, date } = req.body;
-  const user = users.find(u => u._id === _id);
-
-  if (!user) {
-    res.status(404).json({ error: 'User not found' });
-    return;
-  }
-
-  const newExercise = {
-    description,
-    duration: parseInt(duration),
-    date: date ? new Date(date) : new Date()
-  };
-
-  user.log.push(newExercise);
-
-  res.json(user); // Mengembalikan objek pengguna dengan latihan yang ditambahkan
-});
-
-
 
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log("Your app is listening on port " + listener.address().port);
