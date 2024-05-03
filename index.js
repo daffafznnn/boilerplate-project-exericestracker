@@ -28,27 +28,47 @@ app.get("/api/users", (req, res) => {
   res.json(users);
 });
 
-// Add exercise
-app.post("/api/users/:_id/exercises", (req, res) => {
-  const { _id } = req.params;
-  const { description, duration, date } = req.body;
-  const user = users.find((u) => u._id === _id);
+app.post("/api/users/:_id/exercises", function (req, res) {
+  var userId = req.params._id;
+  var description = req.body.description;
+  var duration = req.body.duration;
+  var date = req.body.date;
+
+  console.log("### add a new exercise ###".toLocaleUpperCase());
+
+  // Check for date
+  if (!date) {
+    date = new Date().toISOString().substring(0, 10);
+  }
+
+  console.log(
+    "looking for user with id [".toLocaleUpperCase() + userId + "] ..."
+  );
+
+  // Find the user
+  const user = users.find((user) => user._id === userId);
 
   if (!user) {
-    res.status(404).json({ error: "User not found" });
+    console.log("There are no users with that ID in the database!");
+    res.json({ message: "There are no users with that ID in the database!" });
     return;
   }
 
+  // Create new exercise
   const newExercise = {
-    description,
+    userId: user._id,
+    username: user.username,
+    description: description,
     duration: parseInt(duration),
-    date: date ? new Date(date) : new Date(),
+    date: date,
   };
 
   user.log.push(newExercise);
 
-  // Mengembalikan objek pengguna dengan latihan yang ditambahkan
-  res.json(user); 
+  console.log("Exercise created successfully!");
+
+  // Return the user object with the added exercise fields
+  res.json(user);
 });
 
 
