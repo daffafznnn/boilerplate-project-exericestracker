@@ -1,17 +1,22 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
-require("dotenv").config();
 const bodyParser = require("body-parser");
 
 app.use(cors());
 app.use(express.static("public"));
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 let users = [];
 
+// Generate unique ID
+function generateId() {
+  return "_" + Math.random().toString(36).substr(2, 9);
+}
+
 // Routes
-app.get("/", (req, res) => {
+app.get("/", (_req, res) => {
   res.sendFile(__dirname + "/views/index.html");
 });
 
@@ -24,53 +29,31 @@ app.post("/api/users", (req, res) => {
 });
 
 // Get all users
-app.get("/api/users", (req, res) => {
+app.get("/api/users", (_req, res) => {
   res.json(users);
 });
 
-app.post("/api/users/:_id/exercises", function (req, res) {
-  var userId = req.params._id;
-  var description = req.body.description;
-  var duration = req.body.duration;
-  var date = req.body.date;
-
-  console.log("### add a new exercise ###".toLocaleUpperCase());
-
-  // Check for date
-  if (!date) {
-    date = new Date().toISOString().substring(0, 10);
-  }
-
-  console.log(
-    "looking for user with id [".toLocaleUpperCase() + userId + "] ..."
-  );
-
-  // Find the user
-  const user = users.find((user) => user._id === userId);
+// Add exercise
+app.post("/api/users/:_id/exercises", (req, res) => {
+  const { _id } = req.params;
+  const { description, duration, date } = req.body;
+  const user = users.find((u) => u._id === _id);
 
   if (!user) {
-    console.log("There are no users with that ID in the database!");
-    res.json({ message: "There are no users with that ID in the database!" });
+    res.status(404).json({ error: "User not found" });
     return;
   }
 
-  // Create new exercise
   const newExercise = {
-    userId: user._id,
-    username: user.username,
-    description: description,
+    description,
     duration: parseInt(duration),
-    date: date,
+    date: date ? new Date(date) : new Date(),
   };
 
   user.log.push(newExercise);
 
-  console.log("Exercise created successfully!");
-
-  // Return the user object with the added exercise fields
-  res.json(user);
+  res.json(user); // Return the user object with added exercise fields
 });
-
 
 // Get user's log
 app.get("/api/users/:_id/logs", (req, res) => {
@@ -97,10 +80,8 @@ app.get("/api/users/:_id/logs", (req, res) => {
     log = log.slice(0, parseInt(limit));
   }
 
-  // Mengembalikan objek pengguna dengan log array yang sesuai
   res.json({
-    username: user.username,
-    _id: user._id,
+    ...user,
     count: log.length,
     log: log.map((exercise) => ({
       description: exercise.description,
@@ -109,11 +90,6 @@ app.get("/api/users/:_id/logs", (req, res) => {
     })),
   });
 });
-
-// Helper function to generate unique ID
-function generateId() {
-  return "_" + Math.random().toString(36).substr(2, 9);
-}
 
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log("Your app is listening on port " + listener.address().port);
