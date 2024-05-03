@@ -90,7 +90,7 @@ app.get("/api/users/:_id/logs", (req, res) => {
     log: log.map((exercise) => ({
       description: exercise.description,
       duration: exercise.duration,
-      date: new Date(exercise.date).toDateString(), // Convert date to string
+      date: new Date(exercise.date).toDateString(), // Convert date to string in desired format
     })),
   });
 });
