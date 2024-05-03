@@ -110,8 +110,16 @@ app.post('/api/users/:_id/exercises', (req, res) => {
 
   users[userIndex].log.push(newExercise);
 
-  res.json(users[userIndex]); // Mengembalikan objek pengguna dengan latihan yang ditambahkan
+  // Menyiapkan objek respons dengan kolom latihan yang ditambahkan
+  const userWithExercise = {
+    username: users[userIndex].username,
+    _id: users[userIndex]._id,
+    log: users[userIndex].log
+  };
+
+  res.json(userWithExercise); // Mengembalikan objek pengguna dengan latihan yang ditambahkan
 });
+
 
 
 const listener = app.listen(process.env.PORT || 3000, () => {
