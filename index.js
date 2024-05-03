@@ -82,7 +82,7 @@ app.get("/api/users/:_id/logs", (req, res) => {
     log = log.slice(0, parseInt(limit));
   }
 
-  // Return user object with log array meeting the criteria
+  // Mengembalikan objek pengguna dengan log array yang sesuai
   res.json({
     username: user.username,
     _id: user._id,
@@ -90,7 +90,7 @@ app.get("/api/users/:_id/logs", (req, res) => {
     log: log.map((exercise) => ({
       description: exercise.description,
       duration: exercise.duration,
-      date: new Date(exercise.date).toDateString(), // Convert date to string in desired format
+      date: new Date(exercise.date).toDateString(),
     })),
   });
 });
