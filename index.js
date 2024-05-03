@@ -18,7 +18,7 @@ app.get("/", (req, res) => {
 // Create new user
 app.post("/api/users", (req, res) => {
   const { username } = req.body;
-  const newUser = { username, _id: generateId(), log: [] };
+  const newUser = { username, _id: generateId(), log: [] }; // Change logs to log
   users.push(newUser);
   res.json(newUser);
 });
@@ -47,7 +47,7 @@ app.post("/api/users/:_id/exercises", (req, res) => {
 
   user.log.push(newExercise);
 
-  // Mengembalikan objek pengguna dengan latihan yang ditambahkan
+  // Return user object with added exercise
   res.json(user);
 });
 
@@ -76,7 +76,7 @@ app.get("/api/users/:_id/logs", (req, res) => {
     log = log.slice(0, parseInt(limit));
   }
 
-  // Mengembalikan objek pengguna dengan log array yang sesuai
+  // Return user object with log array meeting the criteria
   res.json({
     username: user.username,
     _id: user._id,
@@ -84,7 +84,7 @@ app.get("/api/users/:_id/logs", (req, res) => {
     log: log.map((exercise) => ({
       description: exercise.description,
       duration: exercise.duration,
-      date: new Date(exercise.date).toDateString(),
+      date: new Date(exercise.date).toDateString(), // Convert date to string
     })),
   });
 });
