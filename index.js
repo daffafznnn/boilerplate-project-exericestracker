@@ -91,6 +91,29 @@ function generateId() {
   return "_" + Math.random().toString(36).substr(2, 9);
 }
 
+// Add exercise
+app.post('/api/users/:_id/exercises', (req, res) => {
+  const { _id } = req.params;
+  const { description, duration, date } = req.body;
+  const userIndex = users.findIndex(u => u._id === _id);
+
+  if (userIndex === -1) {
+    res.status(404).json({ error: 'User not found' });
+    return;
+  }
+
+  const newExercise = {
+    description,
+    duration: parseInt(duration),
+    date: date ? new Date(date) : new Date()
+  };
+
+  users[userIndex].log.push(newExercise);
+
+  res.json(users[userIndex]); // Mengembalikan objek pengguna dengan latihan yang ditambahkan
+});
+
+
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log("Your app is listening on port " + listener.address().port);
 });
