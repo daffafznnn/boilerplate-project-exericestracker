@@ -1,22 +1,17 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
+require("dotenv").config();
 const bodyParser = require("body-parser");
 
 app.use(cors());
 app.use(express.static("public"));
-app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 let users = [];
 
-// Generate unique ID
-function generateId() {
-  return "_" + Math.random().toString(36).substr(2, 9);
-}
-
 // Routes
-app.get("/", (_req, res) => {
+app.get("/", (req, res) => {
   res.sendFile(__dirname + "/views/index.html");
 });
 
@@ -29,7 +24,7 @@ app.post("/api/users", (req, res) => {
 });
 
 // Get all users
-app.get("/api/users", (_req, res) => {
+app.get("/api/users", (req, res) => {
   res.json(users);
 });
 
@@ -52,7 +47,8 @@ app.post("/api/users/:_id/exercises", (req, res) => {
 
   user.log.push(newExercise);
 
-  res.json(user); // This line returns user object with added exercise
+  // Mengembalikan objek pengguna dengan latihan yang ditambahkan
+  res.json(user);
 });
 
 // Get user's log
@@ -80,8 +76,10 @@ app.get("/api/users/:_id/logs", (req, res) => {
     log = log.slice(0, parseInt(limit));
   }
 
+  // Mengembalikan objek pengguna dengan log array yang sesuai
   res.json({
-    ...user,
+    username: user.username,
+    _id: user._id,
     count: log.length,
     log: log.map((exercise) => ({
       description: exercise.description,
@@ -90,6 +88,11 @@ app.get("/api/users/:_id/logs", (req, res) => {
     })),
   });
 });
+
+// Helper function to generate unique ID
+function generateId() {
+  return "_" + Math.random().toString(36).substr(2, 9);
+}
 
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log("Your app is listening on port " + listener.address().port);
