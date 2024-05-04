@@ -90,10 +90,11 @@ app.get("/api/users/:_id/logs", (req, res) => {
     log: log.map((exercise) => ({
       description: exercise.description,
       duration: exercise.duration,
-      date: new Date(exercise.date).toISOString(), // Menggunakan toISOString()
+      date: new Date(exercise.date).toDateString(), // Menggunakan toDateString() untuk format yang diinginkan
     })),
   });
 });
+
 
 // Helper function to generate unique ID
 function generateId() {
